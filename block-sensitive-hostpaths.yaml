@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: HostPathRestriction
+metadata:
+  name: block-hostpath
+spec:
+  parameters:
+    forbiddenPaths:
+      - "/host-system"
+
+
+

@@ -1,0 +1,41 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: containerprivilegesrestriction
+spec:
+  crd:
+    spec:
+      names:
+        kind: ContainerPrivilegesRestriction
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package container.privileges.restriction
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+
+          container.securityContext.privileged == true
+          msg := sprintf("Container '%s' cannot run as privileged", [container.name])
+        }
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+
+          container.securityContext.allowPrivilegeEscalation == true
+          msg := sprintf("Container '%s' cannot have privilege escalation enabled", [container.name])
+        }
+
+
+
+
+
+
+
+
